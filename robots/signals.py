@@ -12,7 +12,11 @@ from django.contrib.sites.shortcuts import get_current_site
 from orders.models import Order
 from robots.models import Robot
 
-
+"""
+Функция использует триггер сигналов Django, чтобы получить сигнал от функции с файла Orders. Когда создается
+робот, на который оставлял заказ клиент, то из заказов с помощью фильтра вытаскиваетмя его заказ
+и клиенту приходит уведомление на его почту уведомление о производстве данного робота
+"""
 @receiver(post_save, sender=Robot)
 def email_notification(sender, instance, created, **kwargs):
     if created: # Если был создан новый robots

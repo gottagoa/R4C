@@ -3,13 +3,23 @@ import json
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
-# Create your views here.
 
 from customers.models import Customer
 from orders.models import Order
 from robots.models import Robot
 
+"""
+Функция создает заказ на робота. Клиент указывает свой электронный адрес исерийный номер робота. Все это хранится в json файле
+которую функция пытается вытащить. Далее вытаскивается клиент по его почте, если такого нет в базе,
+то используется customer, _, чтобы избежать повторных созданий клиента.Затем создается заказ клиента.
+is_robot_exist = Robot.objects.filter(serial=serial).exists() показывает,есть ли робот, если есть, то заказ
+создается, в противном случае заказ тоже сохраняется, но уже с полями order.is_abcent = False, order.is_notificated = False
+Помимо этого, создан файл templait с html файлом email.notification.html, который содержит в себе сообщение,
+которое будет отправлено клиенту при наличии робота, на который он оставлял заказ
+Создан также маршрут path("create/", create_order, name="create_order") в файле urls.py и регистрация в
+админ панели для создания заказа
 
+"""
 @csrf_exempt
 def create_order(request):
     if request.method == 'POST':
