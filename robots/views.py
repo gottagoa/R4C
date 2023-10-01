@@ -7,7 +7,13 @@ from datetime import datetime
 from robots.utils import validate_data
 
 
-
+"""
+1. С utils.py импортированы функции для проверки валидации и внесены в функцию create_robot
+2. В функции create_robot ставим условие о POST запросе и прописываем условие о создании json файла
+3. Передаем в файл поля- модель, версия и дата создания. В errors проверяем соответсвует ли условиям валидации
+4. Создаем робота, указав все поля, данные в модели. Указываем серийный номер, при этом не передавая его в json файл
+5. В словарь robot_data передаем данные для создания json файла
+"""
 @csrf_exempt
 def create_robot(request):
     if request.method == 'POST':
@@ -17,18 +23,20 @@ def create_robot(request):
             version = data.get('version')
             created = data.get('created')
 
-            # Проверка валидации данных модели, версии и даты создания
             errors = validate_data(model, version,created)
             if errors:
                 return JsonResponse({"errors": errors, "message":"Invalid Data"}, status=400)
-            # Создание и сохранение объекта "робот"
+           
+
+            serial = f"{model}-{version}"
             robot = Robot.objects.create(
+                serial=serial,
                 model=model,
                 version=version,
                 created=datetime.strptime(created, '%Y-%m-%d %H:%M:%S')
             )
             
-            # Создание словаря с информацией о роботе
+           
             robot_data = {
                 "model": robot.model,
                 "version": robot.version,
